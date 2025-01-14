@@ -11,7 +11,7 @@
 #pragma once
 
 struct FT {
-	vector<ll> s;
+	vector<ll> s;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXTHISSHOULDFAILTESTS
 	FT(int n) : s(n) {}
 	void update(int pos, ll dif) { // a[pos] += dif
 		for (; pos < sz(s); pos |= pos + 1) s[pos] += dif;

@@ -1,9 +1,11 @@
-// * Author: Thomas Meeks
-// * Source: Tyler Marks
-// * Description: min Li-chao tree allows for range add of arbitary functions
-// * such that any two functions only occur atmost once.
-// * Usage: inc-inc, implicit, works with negative indices, O(log(n)) query
-// * flip signs in update and modify query to change to max.
+/**
+ * Author: Thomas Meeks
+ * Source: Tyler Marks
+ * Description: min Li-chao tree allows for range add of arbitary functions
+ * such that any two functions only occur atmost once.
+ * Usage: inc-inc, implicit, works with negative indices, O(log(n)) query
+ * flip signs in update and modify query to change to max.
+ */
 struct func {
     ll A,B;
     func(ll A, ll B): A(A), B(B) {}

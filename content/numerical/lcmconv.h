@@ -1,7 +1,7 @@
 /**
  * Author: Luke Videckis
  * Description: ssize(a)==ssize(b)
- * lcm_conv[k] = sum of (a[i]*b[j])
+ * lcmconv[k] = sum of (a[i]*b[j])
  * for all pairs (i,j) where lcm(i,j)==k
  */
 const int mod = 998'244'353;

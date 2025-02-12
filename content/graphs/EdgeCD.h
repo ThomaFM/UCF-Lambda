@@ -1,6 +1,6 @@
 /**
  * Author: Luke Videckis
- * Date: 2024-05-21=
+ * Date: 2024-05-21
  * Source: https://github.com/programming-team-code/programming_team_code/
  * Time: $O(n \log n)$
  * Status: Untested

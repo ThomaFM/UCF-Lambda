@@ -1,8 +1,9 @@
 /**
  * Author: Luke Videckis
  * Description: ssize(a)==ssize(b)
- * gcd_conv[k] = sum of (a[i]*b[j])
+ * gcdconv[k] = sum of (a[i]*b[j])
  * for all pairs (i,j) where gcd(i,j)==k
+ * Time: O(N \log N)
  */
 const int mod = 998'244'353;
 vector<int> gcd_convolution(const vector<int>& a,

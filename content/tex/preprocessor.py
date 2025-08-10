@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-# Source code preprocessor for KACTL build process. Compatible with both Python 2 and 3;
-# currently 2 is used because it has better startup overhead (5% faster builds).
+# Source code preprocessor for KACTL build process.
 # License: CC0
 
-from __future__ import print_function
 import sys
 import getopt
 import subprocess
-import snippets
 
 
 def escape(input):
     input = input.replace('<', r'\ensuremath{<}')
     input = input.replace('>', r'\ensuremath{>}')
-    input = input.replace('\n', ' ')
     return input
 
 def pathescape(input):
@@ -71,7 +67,7 @@ def find_start_comment(source, start=None):
 
     return first
 
-def processwithcomments(caption, instream, outstream, listingslang, make_snippet):
+def processwithcomments(caption, instream, outstream, listingslang):
     knowncommands = ['Author', 'Date', 'Description', 'Source', 'Time', 'Memory', 'License', 'Status', 'Usage', 'Details']
     requiredcommands = []
     includelist = []
@@ -82,6 +78,7 @@ def processwithcomments(caption, instream, outstream, listingslang, make_snippet
         lines = instream.readlines()
     except:
         error = "Could not read source."
+        lines = []
     nlines = list()
     for line in lines:
         if 'exclude-line' in line:
@@ -148,16 +145,22 @@ def processwithcomments(caption, instream, outstream, listingslang, make_snippet
         nsource = nsource.rstrip() + source[end:]
     nsource = nsource.strip()
 
-    # create snippet
-    if make_snippet:
-        snippets.build(caption, commands, nsource, listingslang)
-        return
+    nsource_lines = nsource.split('\n')
+    for i in range(0, len(nsource_lines), 5):
+        nend = min(len(nsource_lines), i+5)
+        segment = '\n'.join(nsource_lines[i:nend])
+        hash_script = 'hash'
+        p = subprocess.Popen(['sh', 'content/contest/%s.sh' % hash_script], stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding="utf-8")
+        hsh, _ = p.communicate(segment)
+        hsh = hsh.split(None, 1)[0]
+        hsh = hsh[:6] # only keep first six
+        if(i!=0 and len(nsource_lines[i]) <= 50): nsource_lines[i] += f'//{hsh}'
+    nsource = '\n'.join(nsource_lines)
 
     if listingslang in ['C++', 'Java']:
         hash_script = 'hash'
-        p = subprocess.Popen(['sh', 'content/contest/%s.sh' % hash_script], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        hsh_bytes, _ = p.communicate(nsource.encode())
-        hsh = hsh_bytes.decode()
+        p = subprocess.Popen(['sh', 'content/contest/%s.sh' % hash_script], stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding="utf-8")
+        hsh, _ = p.communicate(nsource)
         hsh = hsh.split(None, 1)[0]
         hsh = hsh + ', '
     else:
@@ -231,8 +234,12 @@ def print_header(data, outstream):
         return name if name.startswith('.') else name.split('.')[0]
     output = r"\enspace{}".join(map(adjust, lines[:ind]))
     font_size = 10
-    if header_length > 150:
+    if header_length > 100:
         font_size = 8
+    if header_length > 125:
+        font_size = 6
+    if header_length > 150:
+        font_size = 5
     output = r"\hspace{3mm}\textbf{" + output + "}"
     output = "\\fontsize{%d}{%d}" % (font_size, font_size) + output
     print(output, file=outstream)
@@ -246,9 +253,8 @@ def main():
     instream = sys.stdin
     outstream = sys.stdout
     print_header_value = None
-    make_snippet = False
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ho:i:l:c:s", ["help", "output=", "input=", "language=", "caption=", "print-header=", "snippet"])
+        opts, args = getopt.getopt(sys.argv[1:], "ho:i:l:c:", ["help", "output=", "input=", "language=", "caption=", "print-header="])
         for option, value in opts:
             if option in ("-h", "--help"):
                 print("This is the help section for this program")
@@ -258,7 +264,6 @@ def main():
                 print("\t -h --help")
                 print("\t -i --input")
                 print("\t -l --language")
-                print("\t -s --snippet")
                 print("\t --print-header")
                 return
             if option in ("-o", "--output"):
@@ -275,16 +280,14 @@ def main():
                 caption = value
             if option == "--print-header":
                 print_header_value = value
-            if option in ("-s", "--snippet"):
-                make_snippet = True
         if print_header_value is not None:
             print_header(print_header_value, outstream)
             return
         print(" * \x1b[1m{}\x1b[0m".format(caption))
         if language in ["cpp", "cc", "c", "h", "hpp"]:
-            processwithcomments(caption, instream, outstream, 'C++', make_snippet)
+            processwithcomments(caption, instream, outstream, 'C++')
         elif language in ["java", "kt"]:
-            processwithcomments(caption, instream, outstream, 'Java', make_snippet)
+            processwithcomments(caption, instream, outstream, 'Java')
         elif language == "ps":
             processraw(caption, instream, outstream) # PostScript was added in listings v1.4
         elif language == "raw":
@@ -294,11 +297,11 @@ def main():
         elif language == "sh":
             processraw(caption, instream, outstream, 'bash')
         elif language == "py":
-            processwithcomments(caption, instream, outstream, 'Python', make_snippet)
+            processwithcomments(caption, instream, outstream, 'Python')
         elif language == "rawpy":
             processraw(caption, instream, outstream, 'Python')
         else:
-            raise ValueError("Unkown language: " + str(language))
+            raise ValueError("Unknown language: " + str(language))
     except (ValueError, getopt.GetoptError, IOError) as err:
         print(str(err), file=sys.stderr)
         print("\t for help use --help", file=sys.stderr)

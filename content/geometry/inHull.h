@@ -1,4 +1,5 @@
 /**
+ * Author: kactl
  * Description: Determine whether a point t lies inside a convex hull (CCW
  * order, with no collinear points). Returns true if point lies within
  * the hull. If strict is true, points on the boundary aren't included.

@@ -145,18 +145,6 @@ def processwithcomments(caption, instream, outstream, listingslang):
         nsource = nsource.rstrip() + source[end:]
     nsource = nsource.strip()
 
-    nsource_lines = nsource.split('\n')
-    for i in range(0, len(nsource_lines), 5):
-        nend = min(len(nsource_lines), i+5)
-        segment = '\n'.join(nsource_lines[i:nend])
-        hash_script = 'hash'
-        p = subprocess.Popen(['sh', 'content/contest/%s.sh' % hash_script], stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding="utf-8")
-        hsh, _ = p.communicate(segment)
-        hsh = hsh.split(None, 1)[0]
-        hsh = hsh[:6] # only keep first six
-        if(i!=0 and len(nsource_lines[i]) <= 50): nsource_lines[i] += f'//{hsh}'
-    nsource = '\n'.join(nsource_lines)
-
     if listingslang in ['C++', 'Java']:
         hash_script = 'hash'
         p = subprocess.Popen(['sh', 'content/contest/%s.sh' % hash_script], stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding="utf-8")
@@ -165,6 +153,37 @@ def processwithcomments(caption, instream, outstream, listingslang):
         hsh = hsh + ', '
     else:
         hsh = ''
+        
+    originalHash = hsh
+    
+	#partial hashing
+	##############
+    if listingslang in ['C++','Java']:
+        codeLines = nsource.split("\n")
+        prefix = ""
+        for i in range(len(codeLines)):
+            prefix+=codeLines[i]
+            prefix+="\n"
+            if((i != 0) and (i%5 == 0) and (len(codeLines[i]) <= 50) and (len(codeLines[i]) > 0) and (not ("//" in codeLines[i]))):
+                p = subprocess.Popen(['sh', 'content/contest/%s.sh' % hash_script], stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding="utf-8")
+                myhsh, _ = p.communicate(prefix)
+                myhsh = myhsh.split(None, 1)[0]
+                myhsh = myhsh[:6] # only keep first six
+                codeLines[i]+= f' //{myhsh}'
+        nsource = '\n'.join(codeLines)
+    ###############
+   
+	#hash entire file again to make sure i didn't fuck anything up
+    if listingslang in ['C++', 'Java']:
+        hash_script = 'hash'
+        p = subprocess.Popen(['sh', 'content/contest/%s.sh' % hash_script], stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding="utf-8")
+        hsh, _ = p.communicate(nsource)
+        hsh = hsh.split(None, 1)[0]
+        hsh = hsh + ', '
+    else:
+        hsh = ''
+        
+    assert(originalHash == hsh)
     # Produce output
     out = []
     if warning:
@@ -234,12 +253,8 @@ def print_header(data, outstream):
         return name if name.startswith('.') else name.split('.')[0]
     output = r"\enspace{}".join(map(adjust, lines[:ind]))
     font_size = 10
-    if header_length > 100:
-        font_size = 8
-    if header_length > 125:
-        font_size = 6
     if header_length > 150:
-        font_size = 5
+        font_size = 8
     output = r"\hspace{3mm}\textbf{" + output + "}"
     output = "\\fontsize{%d}{%d}" % (font_size, font_size) + output
     print(output, file=outstream)

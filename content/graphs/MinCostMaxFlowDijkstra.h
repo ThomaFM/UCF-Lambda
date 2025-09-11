@@ -1,6 +1,6 @@
 /**
  * Author: Tyler M
- * Date: 2/2/2024
+ * Date: 2024-02-02
  * Source: various cf blogs
  * Description: If SPFA TLEs, swap the find\_path function in MCMF
  * 	with the one below and in\_q with seen. If negative edge weights 
@@ -10,7 +10,7 @@
  */
 #pragma once
 
-bool findPath(int s, int t) {
+bool find_path(int s, int t) {
 	fill(all(dist), inf);
 	fill(all(seen), 0);
 	dist[s] = 0;

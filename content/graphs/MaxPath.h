@@ -18,7 +18,7 @@ struct maxPath{
             p[u] = v; s[v]+=s[u]; wt[u] = w;
         }
     }
-    int query(int u, int v){
+    int query(int u, int v){ //assert(u!=v);
         while(p[u]!=v && p[v]!=u){
             if(wt[u]<wt[v]) u=p[u]; 
             else v=p[v]; 

@@ -33,7 +33,7 @@ struct SAQuery{
             return flip ^ (len_lcp(i, s_l) < s_r - s_l); };
         auto it = begin(sa.sa) + sainv[s_l];
 		int l=lower_bound(begin(sa.sa),it,0,cmp)-begin(sa.sa);
-        int r=lower_bound(it+1,end(sa.sa),1,cmp)-begin(sa.sa);
+		int r=lower_bound(it+1,end(sa.sa),1,cmp)-begin(sa.sa);
         return {l, r}; //[)
     }
 };

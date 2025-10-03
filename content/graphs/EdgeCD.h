@@ -2,6 +2,12 @@
  * Author: Luke Videckis
  * Date: 2024-05-21
  * Source: https://github.com/programming-team-code/programming_team_code/
+ * Description: Edge-Centroid Decomp, count single edge paths separately, don't consider
+ * root to node paths in F
+ * edge_cd(adj, [&](const auto& adj, int cent, int m) {
+ *    subtrees of [0, m) of adj[cent]: 1st edge-set
+ *    subtrees of [m, sz(adj[cent])): 2nd edge-set
+ * });
  * Time: $O(n \log n)$
  * Status: Untested
  */

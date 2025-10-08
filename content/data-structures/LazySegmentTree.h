@@ -2,7 +2,8 @@
  * Author: Atcoder/Modified
  * Date: 2025-10-08
  * License: CC0
- * Description: Segment tree with lazy prop, modify at will
+ * Description: Segment tree with lazy prop, modify at will.
+ *  0-based, inclusive-exclusive.
  * Time: O(\log N).
  * Usage: lazy_segtree<ValType,LazyType> st(arr)
  * Status: stress-tested a bit

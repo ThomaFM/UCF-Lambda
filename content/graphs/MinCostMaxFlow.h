@@ -11,8 +11,8 @@
  */
 #pragma once
 
-struct mcmf {
-	const ll inf = LLONG_MAX >> 2;
+struct MCMF {
+	const ll INF = LLONG_MAX >> 2;
 	struct edge {
 		int v;
 		ll cap, flow, cost;
@@ -21,16 +21,16 @@ struct mcmf {
 	vector<edge> edges;
 	vvi adj; vii par; vi in_q;
 	vector<ll> dist, pi;
-	mcmf(int n): n(n), adj(n), par(n), in_q(n), dist(n), pi(n) {}
-	void add_edge(int u, int v, ll cap, ll cost) {
+	MCMF(int n): n(n), adj(n), par(n), in_q(n), dist(n), pi(n) {}
+	void addEdge(int u, int v, ll cap, ll cost) {
 		int idx = sz(edges);
 		edges.push_back({v, cap, 0, cost});
 		edges.push_back({u, cap, cap, -cost});
 		adj[u].push_back(idx);
 		adj[v].push_back(idx ^ 1);
 	}
-	bool find_path(int s, int t) {
-		fill(all(dist), inf);
+	bool findPath(int s, int t) {
+		fill(all(dist), INF);
 		fill(all(in_q), 0);
 		queue<int> q; q.push(s); 
 		dist[s] = 0, in_q[s] = 1;
@@ -47,13 +47,13 @@ struct mcmf {
 				q.push(nxt); in_q[nxt] = 1;
 			}
 		}
- 
-		return dist[t] < inf;
+
+		return dist[t] < INF;
 	}
 	pair<ll, ll> calc(int s, int t) {
 		ll flow = 0, cost = 0;
-		while(find_path(s, t)) {
-			ll f = inf;
+		while(findPath(s, t)) {
+			ll f = INF;
 			for(int i, u, v = t; tie(u, i) = par[v], v != s; v = u)
 				f = min(f, edges[i].cap - edges[i].flow);
 			flow += f;

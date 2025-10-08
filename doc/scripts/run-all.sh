@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 DIR=${1:-.}
-tests="$(find $DIR/stress-tests -name '*.cpp')"
+if [[ "$2" == "failed" ]]; then
+    if [[ -f build/failedTests.txt ]]; then
+        tests="$(cat build/failedTests.txt)"
+    else
+        echo "All tests passed on the previous run"
+        exit 0
+    fi
+else
+    tests="$(find $DIR/stress-tests -name '*.cpp')"
+fi
 declare -i pass=0
 declare -i fail=0
 failTests=""
@@ -8,7 +17,7 @@ ulimit -s 524288 # For 2-sat test
 for test in $tests; do
     echo "$(basename $test): "
     start=`date +%s.%N`
-    g++ -std=c++14 -O2 $test && ./a.out
+    g++ -std=c++20 -O2 $test && ./a.out
     retCode=$?
     if (($retCode != 0)); then
         echo "Failed with $retCode"
@@ -25,9 +34,11 @@ for test in $tests; do
 done
 echo "$pass/$(($pass+$fail)) tests passed"
 if (($fail == 0)); then
+    rm -f build/failedTests.txt
     echo "No tests failed"
     exit 0
 else
-    echo -e "These tests failed: \n $failTests"
+    echo -en "$failTests" > build/failedTests.txt
+    echo -e "These tests failed:\n$failTests"
     exit 1
 fi

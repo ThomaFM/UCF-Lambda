@@ -8,7 +8,7 @@
  * Time: O(n)
  * Usage:
  * vector<P> v = {P{4,4}, P{1,2}, P{2,1}};
- * int in = inPolygon(v, P{3, 3});
+ * int in = inPoly(v, P{3, 3});
  * Status: stress-tested and tested on kattis:pointinpolygon
  */
 #pragma once
@@ -22,7 +22,7 @@ template<class P> int inPoly(vector<P> poly, P p) {
 		return ((e.y >= p.y) - (s.y >= p.y)) * p.cross(s, e) > 0; 
 	};
 	for(int i = 0; i < n; i++){
-		if(onSeg(poly[i], poly[(i+1)%n], p)) return 2;
+		if(onSegment(poly[i], poly[(i+1)%n], p)) return 2;
 		good ^= crosses(poly[i], poly[(i+1)%n], p);
 	}
 	return good;

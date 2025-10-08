@@ -10,7 +10,7 @@
  */
 #pragma once
 
-bool find_path(int s, int t) {
+bool findPath(int s, int t) {
 	fill(all(dist), inf);
 	fill(all(seen), 0);
 	dist[s] = 0;

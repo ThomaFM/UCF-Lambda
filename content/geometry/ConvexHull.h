@@ -12,6 +12,7 @@
 
 template<class P> vector<P> convexHull(vector<P> poly){
 	int n = sz(poly);
+	if (n <= 1) return poly;
 	vector<P> hull(n+1);
 	sort(all(poly));
 	int k = 0;
@@ -24,5 +25,6 @@ template<class P> vector<P> convexHull(vector<P> poly){
 		hull[k++] = poly[i-1];
 	}
 	hull.resize(k-1);
+	hull.erase(unique(all(hull)), hull.end());
 	return hull;
 }

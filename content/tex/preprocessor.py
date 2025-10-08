@@ -161,15 +161,22 @@ def processwithcomments(caption, instream, outstream, listingslang):
     if listingslang in ['C++','Java']:
         codeLines = nsource.split("\n")
         prefix = ""
+        lastLine = 0
         for i in range(len(codeLines)):
             prefix+=codeLines[i]
             prefix+="\n"
-            if((i != 0) and (i%5 == 0) and (len(codeLines[i]) <= 50) and (len(codeLines[i]) > 0) and (not ("//" in codeLines[i]))):
+            shouldPartialHash = i - lastLine >= 5
+            if codeLines[i].strip().endswith("}") or codeLines[i].strip().endswith("};"):
+                shouldPartialHash = True
+            if len(codeLines[i]) > 54 or len(codeLines[i]) == 0 or "//" in codeLines[i]:
+                shouldPartialHash = False
+            if shouldPartialHash:
                 p = subprocess.Popen(['sh', 'content/contest/%s.sh' % hash_script], stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding="utf-8")
                 myhsh, _ = p.communicate(prefix)
                 myhsh = myhsh.split(None, 1)[0]
                 myhsh = myhsh[:6] # only keep first six
                 codeLines[i]+= f' //{myhsh}'
+                lastLine = i
         nsource = '\n'.join(codeLines)
     ###############
    

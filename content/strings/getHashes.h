@@ -6,7 +6,7 @@
  * Description: Various self-explanatory methods for string hashing.
  * Status: stress-tested
  */
-#include <Hashing.h>
+#include "Hashing.h"
 
 vector<H> getHashes(string& str, int length) {
 	if (sz(str) < length) return {};

@@ -11,7 +11,7 @@
  */
 #pragma once
 
-vi topoSort(const vector<vi>& gr) {
+vi topSort(const vector<vi>& gr) {
 	vi indeg(sz(gr)), ret;
 	for (auto& li : gr) for (int x : li) indeg[x]++;
 	queue<int> q; // use priority_queue for lexic. largest ans.

@@ -8,7 +8,9 @@
 		"complex": "cpp",
 		"cmath": "cpp",
 		"bitset": "cpp",
-		"random": "cpp"
+		"random": "cpp",
+		"array": "cpp",
+		"ostream": "cpp"
 	},
     "editor.insertSpaces": false,
     "editor.detectIndentation": false

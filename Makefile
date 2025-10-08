@@ -12,6 +12,7 @@ help:
 	@echo "	make clean		- to clean up the build process"
 	@echo "	make veryclean		- to clean up and remove hackpack.pdf"
 	@echo "	make test		- to run all the stress tests in stress-tests/"
+	@echo "	make retest		- to run all the stress tests that failed last time"
 	@echo "	make test-compiles	- to test compiling all headers"
 	@echo "	make help		- to show this information"
 	@echo "	make showexcluded	- to show files that are not included in the doc"
@@ -39,6 +40,9 @@ build:
 
 test:
 	./doc/scripts/run-all.sh .
+
+retest:
+	./doc/scripts/run-all.sh . failed
 
 test-compiles:
 	./doc/scripts/compile-all.sh .

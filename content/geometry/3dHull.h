@@ -12,13 +12,15 @@
 
 #include "Point3D.h"
 
-typedef Point3D<double> P;
+typedef Point3D<double> P3;
 const double eps = 1e-6;
 
-vector<array<int, 3>> convex_shell(vector<P> &p) {
+struct F { int a, b, c; };
+
+vector<F> hull3d(vector<P3> &p) {
 	int n = sz(p);
 	if(n < 3) return {};
-	vector<array<int, 3>> faces;
+	vector<F> faces;
 
 	vvi active(n, vi(n, false));
 
@@ -37,10 +39,11 @@ vector<array<int, 3>> convex_shell(vector<P> &p) {
 				active[a][b] = active[b][c] = active[c][a] = false;
 			else new_faces.push_back({a, b, c});
 		faces.clear();
-		for(array<int, 3> f: new_faces)
+		for(auto f: new_faces)
 			rep(j, 0, 3) if(!active[f[(j+1)%3]][f[j]])
 				add_face(f[(j+1)%3], f[j], i);
-		faces.insert(end(faces), all(new_faces));
+		for(auto [a, b, c]: new_faces)
+			faces.push_back({a, b, c});
 	}
 
 	return faces;

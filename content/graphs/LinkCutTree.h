@@ -10,17 +10,18 @@
 
 struct SplayTree {
 	struct Node {
-		int ch[2] = {0, 0}, p = 0;
+		int ch[2] = {-1, -1}, p = -1;
 		ll self = 0, path = 0;        // Path aggregates
 		ll sub = 0, vir = 0;          // Subtree aggregates
 		bool flip = 0;                       // Lazy tags
 	};
-	vector<Node> T;
+	vector<Node> Ts;
+	Node *T;
  
-	SplayTree(int n) : T(n + 1) {}
+	SplayTree(int n) : Ts(n+1), T(&Ts[1]) {}
 	
 	void push(int x) {
-		if (!x || !T[x].flip) return;
+		if (x == -1 || !T[x].flip) return;
 		int l = T[x].ch[0], r = T[x].ch[1];
  
 		T[l].flip ^= 1, T[r].flip ^= 1;
@@ -41,7 +42,7 @@ struct SplayTree {
  
 	void splay(int x) { 
 		auto dir = [&](int x) {
-			int p = T[x].p; if (!p) return -1;
+			int p = T[x].p; if (p == -1) return -1;
 			return T[p].ch[0] == x ? 0 : T[p].ch[1] == x ? 1 : -1;
 		};
 		auto rotate = [&](int x) {
@@ -65,8 +66,8 @@ struct LinkCut : SplayTree {
 	LinkCut(int n) : SplayTree(n) {}
  
 	int access(int x) {
-		int u = x, v = 0;
-		for (; u; v = u, u = T[u].p) {
+		int u = x, v = -1;
+		for (; u != -1; v = u, u = T[u].p) {
 			splay(u); 
 			int& ov = T[u].ch[1];
 			T[u].vir += T[ov].sub;
@@ -80,36 +81,40 @@ struct LinkCut : SplayTree {
 		access(x); T[x].flip ^= 1; push(x); 
 	}
 	
-	void Link(int u, int v) { 
+	void link(int u, int v) { 
 		reroot(u); access(v); 
 		T[v].vir += T[u].sub;
 		T[u].p = v; pull(v);
 	}
 	
-	void Cut(int u, int v) {
+	void cut(int u, int v) {
 		reroot(u); access(v);
-		T[v].ch[0] = T[u].p = 0; pull(v);
+		T[v].ch[0] = T[u].p = -1; pull(v);
+	}
+
+	bool connected(int u, int v) {
+		return lca(u, v) != -1;
 	}
 	
-	// Rooted tree LCA. Returns 0 if u and v arent connected.
-	int LCA(int u, int v) { 
+	// Rooted tree LCA. Returns -1 if u and v arent connected.
+	int lca(int u, int v) { 
 		if (u == v) return u;
 		access(u); int ret = access(v); 
-		return T[u].p ? ret : 0;
+		return T[u].p != -1 ? ret : -1;
 	}
 	
 	// Query subtree of u where v is outside the subtree.
-	ll Subtree(int u, int v) {
+	ll subtree(int u, int v) {
 		reroot(v); access(u); return T[u].vir + T[u].self;
 	}
 	
 	// Query path [u..v]
-	ll Path(int u, int v) {
+	ll path(int u, int v) {
 		reroot(u); access(v); return T[v].path;
 	}
 	
 	// Update vertex u with value v
-	void Update(int u, ll v) {
+	void update(int u, ll v) {
 		access(u); T[u].self = v; pull(u);
 	}
 };

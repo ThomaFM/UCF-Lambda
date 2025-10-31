@@ -1,7 +1,7 @@
 /**
- * Author: Tyler M
- * Date: 02/02/2024
- * Source: CP-Algorithms
+ * Author: Brian
+ * Date: 10/15/2025
+ * Source: CP-Algorithms/Codeforces blog
  * Description: A short self-balancing tree. It acts as a
  *  sequential container with log-time splits/joins, and
  *  is easy to augment with additional data.
@@ -10,44 +10,32 @@
  */
 #pragma once
 
-struct node {
-	int val, prior, sz = 1;
-	node *left = nullptr, *right = nullptr;
-	node(int val = 0): val(val), prior(rand()) {}
-};
-
-int getSz(node *cur) { return cur ? cur->sz : 0; }
-void recalc(node *cur) { cur->sz = getSz(cur->left) + getSz(cur->right) + 1; }
-
-pair<node*, node*> split(node *cur, int v) {
-	if(!cur) return {nullptr, nullptr};
-	node *left, *right;
-	if(getSz(cur->left) >= v) {
-		right = cur;
-		auto [L, R] = split(cur->left, v);
-		left = L, right->left = R;
-		recalc(right);
-	}
-	else {
-		left = cur;
-		auto [L, R] = split(cur->right, v - getSz(cur->left) - 1);
-		left->right = L, right = R;
-		recalc(left);
-	} 
-	return {left, right};
+typedef struct Node {
+	Node *l = 0, *r = 0;
+	int val, y, c;
+	Node(int val) : val(val), y(rand()) { pull(); }
+	void pull(); void push();
+} *np;
+int cnt(np n) { return n ? n->c : 0; }
+void Node::pull() { c = cnt(l) + cnt(r) + 1; }
+void Node::push() {}
+np nl, nr;
+pair<np, np> split(np x, int i, np &l = nl, np &r = nr) {
+	if (!x) return {l = r = 0, 0};
+	x->push(); // VVV "cnt(x->l)" => "x->val" for lower_bound
+	if (i <= cnt(x->l)) split(x->l, i, l, x->l), r = x;
+	else split(x->r, i - cnt(x->l) - 1, x->r, r), l = x;
+	x->pull(); // ^^^ and "i - cnt(x->l) - 1" => "i"
+	return {l, r};
 }
-
-node* merge(node *t1, node *t2) {
-	if(!t1 || !t2) return t1 ? t1 : t2;
-	node *res;
-	if(t1->prior > t2->prior) {
-		res = t1;
-		res->right = merge(t1->right, t2);
-	}
-	else {
-		res = t2;
-		res->left = merge(t1, t2->left);
-	}
-	recalc(res);
-	return res;
+auto merge(np l, np r, np &x = nl) {
+	if (!l || !r) return x = l ?: r;
+	l->push(), r->push();
+	if (l->y < r->y) merge(l, r->l, r->l), x = r;
+	else merge(l->r, r, l->r), x = l;
+	x->pull();
+	return x;
+}
+template<class F> void each(np n, F f) {
+	if (n) { n->push(); each(n->l, f); f(n->val); each(n->r, f); }
 }

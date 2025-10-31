@@ -2,26 +2,32 @@
 
 #include "../../content/data-structures/Treap.h"
 
-pair<Node*, Node*> split2(Node* n, int v) {
-	if (!n) return {};
-	if (n->val >= v) {
-		auto pa = split2(n->l, v);
-		n->l = pa.second;
-		n->recalc();
-		return {pa.first, n};
-	} else {
-		auto pa = split2(n->r, v);
-		n->r = pa.first;
-		n->recalc();
-		return {n, pa.second};
-	}
+void split2(Node *x, Node *&l, Node *&r, int i) {
+	if (!x) { l = r = 0; return; }
+	x->push();
+	if (i <= x->val) split2(x->l, l, x->l, i), r = x;
+	else split2(x->r, x->r, r, i), l = x;
+	x->pull();
 }
+auto split2(Node *x, int i) { pair<Node *, Node *> r;
+	split2(x, r.first, r.second, i); return r; }
 
 int ra() {
 	static unsigned x;
 	x *= 4176481;
 	x += 193861934;
 	return x >> 1;
+}
+
+Node* ins(Node* t, Node* n, int pos) {
+	auto [l,r] = split(t, pos);
+	return merge(merge(l, n), r);
+}
+void move(Node*& t, int l, int r, int k) {
+	Node *a, *b, *c;
+	tie(a,b) = split(t, l); tie(b,c) = split(b, r - l);
+	if (k <= l) t = merge(ins(a, b, k), c);
+	else t = merge(a, ins(c, b, k - r));
 }
 
 int main() {

@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+tests="$(find $SCRIPT_DIR/stress-tests -name '*.cpp' | grep -i "$1")"
+if [[ "$(wc -l <<< $tests)" != 1 ]]; then
+	echo "'$1' matches $(wc -l <<< $tests) tests"
+	exit 1
+fi
+echo "Compiling $tests"
+g++ -std=c++20 -O2 -g $tests
+valgrind -q ./a.out

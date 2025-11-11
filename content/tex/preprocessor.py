@@ -168,7 +168,7 @@ def processwithcomments(caption, instream, outstream, listingslang):
             shouldPartialHash = i - lastLine >= 5
             if codeLines[i].strip().endswith("}") or codeLines[i].strip().endswith("};"):
                 shouldPartialHash = True
-            if len(codeLines[i]) > 54 or len(codeLines[i]) == 0 or "//" in codeLines[i]:
+            if len(codeLines[i]) > 53 or len(codeLines[i]) == 0 or "//" in codeLines[i]:
                 shouldPartialHash = False
             if shouldPartialHash:
                 p = subprocess.Popen(['sh', 'content/contest/%s.sh' % hash_script], stdin=subprocess.PIPE, stdout=subprocess.PIPE, encoding="utf-8")

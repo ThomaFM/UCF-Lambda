@@ -27,7 +27,7 @@ struct lazy_segtree {
 		for (int i = S - 1; i >= 1; i--) pull(i);
 	}
 	void apply(int k, F f) {
-		d[k] = applyLazy(d[k], f); //len = S>>(31-__builtin_clz(k));
+		d[k] = applyLazy(d[k], f);//len= S>>(31-__builtin_clz(k));
 		if (k < S) lz[k] = combLazy(lz[k],f);
 	}
 	void push(int k) {

@@ -38,8 +38,8 @@ vector<P> hpIntersection(vector<HalfPlane> hps) {
 			if(dq[--r].contains(hps[i].s)) dq[r] = hps[i];
 		}
 	}
-	while(l < r - 1 && !dq[l].contains(dq[r].inter(dq[r-1]))) r--;
-	while(l < r - 1 && !dq[r].contains(dq[l].inter(dq[l+1]))) l++;
+	while(l<r-1 && !dq[l].contains(dq[r].inter(dq[r-1]))) r--;
+	while(l<r-1 && !dq[r].contains(dq[l].inter(dq[l+1]))) l++;
 	if(l > r - 2) return {};
 	vector<P> poly;
 	rep(i, l, r)

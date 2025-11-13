@@ -16,7 +16,7 @@
 	\kactlimport{MillerRabin.h}
 	\kactlimport{Factor.h}
 	%\kactlimport{GetFactors.h}
-	\kactlimport{mobiusFunction.h}
+	%\kactlimport{mobiusFunction.h}
 
 \section{Divisibility}
 	\kactlimport{euclid.h}
@@ -52,9 +52,9 @@
 \]
   Computation
   \begin{verbatim}
-  mu[1] = 1;
-  rep(i,1,sz(mu)) for(int j =2*i; j<sz(mu); j+=i)
-    mu[j]-=mu[i];
+mu[1] = 1;
+rep(i,1,sz(mu)) for(int j =2*i; j<sz(mu); j+=i)
+  mu[j]-=mu[i];
   \end{verbatim}
   Mobius Inversion:
   \[ g(n) = \sum_{d|n} f(d) \Leftrightarrow f(n) = \sum_{d|n} \mu(d)g(n/d) \]

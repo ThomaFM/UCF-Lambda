@@ -4,7 +4,8 @@
  * License: CC0
  * Source: folklore
  * Description: Disjoint-set data structure with undo.
- * If undo is not needed, skip st, time() and rollback().
+ * If undo is not needed, skip st, time() and rollback(). 
+ * and add path compression at the commented line
  * Usage: int t = uf.time(); ...; uf.rollback(t);
  * Time: $O(\log(N))$
  * Status: tested as part of DirectedMST.h
@@ -12,12 +13,12 @@
 #pragma once
 
 struct RollbackUF {
-	vi e; vector<pii> st;
+	vi e; vector<pii> st; 
 	RollbackUF(int n) : e(n, -1) {}
-	int size(int x) { return -e[find(x)]; }
-	int find(int x) { return e[x] < 0 ? x : find(e[x]); }
-	int time() { return sz(st); }
-	void rollback(int t) {
+	int size(int x) { return -e[find(x)]; } //if no rollback
+	int find(int x) { return e[x] < 0 ? x :/*e[x] =*/find(e[x]); }
+	int time() { return sz(st); } 
+	void rollback(int t) { 
 		for (int i = time(); i --> t;)
 			e[st[i].first] = st[i].second;
 		st.resize(t);
